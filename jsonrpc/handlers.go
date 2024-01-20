@@ -43,6 +43,7 @@ var rpcHandlersBeforeInit = map[string]commandHandler{
 	"tool.InscriptionTxOperate": handleGetTxOperate,
 	"transaction.Info":          handleGetTxByHash,
 	"tick.GetBriefs":            handleGetTickBriefs,
+	"inds_getTick":              indsGetTick,
 }
 
 func handleFindAllInscriptions(s *RpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {

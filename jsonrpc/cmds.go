@@ -7,7 +7,9 @@
 
 package jsonrpc
 
-import "github.com/uxuycom/indexer/model"
+import (
+	"github.com/uxuycom/indexer/model"
+)
 
 // EmptyCmd defines the empty JSON-RPC command.
 type EmptyCmd struct{}
@@ -35,6 +37,13 @@ type IndsGetTicksCmd struct {
 	SortMode int    `json:"sort_mode"`
 }
 
+type IndsGetTickCmd struct {
+	Chain      string
+	Protocol   string
+	Tick       string
+	DeployHash string
+}
+
 type FindAllInscriptionsResponse struct {
 	Inscriptions interface{} `json:"inscriptions"`
 	Total        int64       `json:"total"`
@@ -56,6 +65,10 @@ type InscriptionInfo struct {
 	CreatedAt    uint32 `json:"created_at"`
 	UpdatedAt    uint32 `json:"updated_at"`
 	Decimals     int8   `json:"decimals"`
+	Minted       string `json:"minted"`
+	Holders      uint64 `json:"holders"`
+	TxCnt        uint64 `json:"tx_cnt"`
+	Progress     string `json:"progress"`
 }
 
 // FindInscriptionTickCmd defines the inscription JSON-RPC command.
@@ -138,6 +151,16 @@ type BalanceInfo struct {
 	Balance      string `json:"balance"`
 	DeployHash   string `json:"deploy_hash"`
 	TransferType int8   `json:"transfer_type"`
+}
+
+type TickHolder struct {
+	Chain       string `json:"chain"`
+	Protocol    string `json:"protocol"`
+	Tick        string `json:"tick"`
+	DeployHash  string `json:"deploy_hash"`
+	Address     string `json:"address"`
+	Balance     string `json:"balance"`
+	TotalSupply string `json:"total_supply"`
 }
 
 type BalanceBrief struct {
@@ -261,6 +284,7 @@ func init() {
 
 	//v2
 	MustRegisterCmd("inds_getTicks", (*IndsGetTicksCmd)(nil), flags)
+	MustRegisterCmd("inds_getTick", (*IndsGetTickCmd)(nil), flags)
 	MustRegisterCmd("inds_getTransactionByAddress", (*FindUserTransactionsCmd)(nil), flags)
 	MustRegisterCmd("inds_getBalanceByAddress", (*IndsGetBalanceByAddressCmd)(nil), flags)
 	MustRegisterCmd("inds_getHoldersByTick", (*IndsGetHoldersByTickCmd)(nil), flags)
