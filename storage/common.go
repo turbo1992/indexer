@@ -389,7 +389,7 @@ func (conn *DBClient) GetInscriptions(limit, offset int, chain, protocol, tick, 
 		query = query.Where("`a`.protocol = ?", protocol)
 	}
 	if tick != "" {
-		query = query.Where("`a`.tick = ?", tick)
+		query = query.Where("`a`.tick like ?", "%"+tick+"%")
 	}
 	if deployBy != "" {
 		query = query.Where("`a`.deploy_by = ?", deployBy)
@@ -456,41 +456,6 @@ func (conn *DBClient) GetInscriptionsByAddress(limit, offset int, address string
 	}
 
 	return balances, nil
-}
-
-func (conn *DBClient) GetTransactionsByAddress(limit, offset int, address, chain, protocol, tick, key string, event int8) (
-	[]*model.AddressTransaction, int64, error) {
-
-	var data []*model.AddressTransaction
-	var total int64
-
-	query := conn.SqlDB.Select("*").Table("txs as t").
-		Joins("left join `address_txs` as a on (`t`.tx_hash = `a`.tx_hash and `t`.chain = `a`.chain and `t`.protocol = `a`.protocol and `t`.tick = `a`.tick)").
-		Where("`a`.address = ?", address)
-
-	if chain != "" {
-		query = query.Where("`a`.chain = ?", chain)
-	}
-	if protocol != "" {
-		query = query.Where("`a`.protocol = ?", protocol)
-	}
-	if tick != "" {
-		query = query.Where("`a`.tick = ?", tick)
-	}
-	if key != "" {
-		query = query.Where("`a`.tick like ?", "%"+key+"%")
-	}
-	if event > 0 {
-		query = query.Where("`a`.event = ?", event)
-	}
-
-	query = query.Count(&total)
-	result := query.Order("`a`.id desc").Limit(limit).Offset(offset).Find(&data)
-	if result.Error != nil {
-		return nil, 0, result.Error
-	}
-
-	return data, total, nil
 }
 
 func (conn *DBClient) GetAddressTxs(limit, offset int, address, chain, protocol, tick string, event int8) ([]*model.AddressTransaction, int64, error) {
