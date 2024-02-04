@@ -23,6 +23,7 @@
 package jsonrpc
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/uxuycom/indexer/model"
@@ -65,7 +66,12 @@ func handleFindInscriptionTick(s *RpcServer, cmd interface{}, closeChan <-chan s
 	req.Protocol = strings.ToLower(req.Protocol)
 	req.Tick = strings.ToLower(req.Tick)
 
-	cacheKey := fmt.Sprintf("tick_%s_%s_%s", req.Chain, req.Protocol, req.Tick)
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return ErrRPCInternal, err
+	}
+
+	cacheKey := fmt.Sprintf("tick_%s", string(reqByte))
 	if ins, ok := s.cacheStore.Get(cacheKey); ok {
 		if ticks, ok := ins.(*InscriptionInfo); ok {
 			return ticks, nil
@@ -109,7 +115,12 @@ func handleFindAddressTransactions(s *RpcServer, cmd interface{}, closeChan <-ch
 	req.Protocol = strings.ToLower(req.Protocol)
 	req.Tick = strings.ToLower(req.Tick)
 
-	cacheKey := fmt.Sprintf("addr_txs_%d_%d_%s_%s_%s_%s_%d", req.Limit, req.Offset, req.Address, req.Chain, req.Protocol, req.Tick, req.Event)
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return ErrRPCInternal, err
+	}
+
+	cacheKey := fmt.Sprintf("addr_txs_%s", string(reqByte))
 	if ins, ok := s.cacheStore.Get(cacheKey); ok {
 		if allIns, ok := ins.(*FindUserTransactionsResponse); ok {
 			return allIns, nil
@@ -196,9 +207,14 @@ func handleFindAddressBalance(s *RpcServer, cmd interface{}, closeChan <-chan st
 	}
 	xylog.Logger.Infof("find user balance cmd params:%v", req)
 
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return ErrRPCInternal, err
+	}
+
 	req.Protocol = strings.ToLower(req.Protocol)
 	req.Tick = strings.ToLower(req.Tick)
-	cacheKey := fmt.Sprintf("addr_balance_%s_%s_%s", req.Chain, req.Protocol, req.Tick)
+	cacheKey := fmt.Sprintf("addr_balance_%s", string(reqByte))
 	if ins, ok := s.cacheStore.Get(cacheKey); ok {
 		if allIns, ok := ins.(*BalanceBrief); ok {
 			return allIns, nil
@@ -294,7 +310,13 @@ func handleGetTxOperate(s *RpcServer, cmd interface{}, closeChan <-chan struct{}
 	if !ok {
 		return ErrRPCInvalidParams, errors.New("invalid params")
 	}
-	cacheKey := fmt.Sprintf("tx_operate_%s_%s", req.Chain, req.InputData)
+
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return ErrRPCInternal, err
+	}
+
+	cacheKey := fmt.Sprintf("tx_operate_%s", string(reqByte))
 	if ins, ok := s.cacheStore.Get(cacheKey); ok {
 		if allIns, ok := ins.(*TxOperateResponse); ok {
 			return allIns, nil
@@ -332,8 +354,13 @@ func handleGetTxByHash(s *RpcServer, cmd interface{}, closeChan <-chan struct{})
 	}
 	xylog.Logger.Infof("get tx by hash cmd params:%v", req)
 
+	reqByte, err := json.Marshal(req)
+	if err != nil {
+		return ErrRPCInternal, err
+	}
+
 	req.TxHash = strings.ToLower(req.TxHash)
-	cacheKey := fmt.Sprintf("tx_info_%s_%s", req.Chain, req.TxHash)
+	cacheKey := fmt.Sprintf("tx_info_%s", string(reqByte))
 	if ins, ok := s.cacheStore.Get(cacheKey); ok {
 		if allIns, ok := ins.(*GetTxByHashResponse); ok {
 			return allIns, nil
