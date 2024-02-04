@@ -389,7 +389,7 @@ func (conn *DBClient) GetInscriptions(limit, offset int, chain, protocol, tick, 
 		query = query.Where("`a`.protocol = ?", protocol)
 	}
 	if tick != "" {
-		query = query.Where("`a`.tick like ?", "%"+tick+"%")
+		query = query.Where("`a`.tick = ?", tick)
 	}
 	if deployBy != "" {
 		query = query.Where("`a`.deploy_by = ?", deployBy)
