@@ -260,6 +260,7 @@ type TransactionInfo struct {
 	From       string `json:"from"`
 	To         string `json:"to"`
 	Amount     string `json:"amount"`
+	Op         string `json:"op"`
 }
 
 type GetTxByHashResponse struct {

@@ -387,6 +387,7 @@ func handleGetTxByHash(s *RpcServer, cmd interface{}, closeChan <-chan struct{})
 		Tick:     tx.Tick,
 		From:     tx.From,
 		To:       tx.To,
+		Op:       tx.Op,
 	}
 
 	inscription, err := s.dbc.FindInscriptionByTick(tx.Chain, tx.Protocol, tx.Tick)
