@@ -243,6 +243,7 @@ func handleFindAddressBalance(s *RpcServer, cmd interface{}, closeChan <-chan st
 		return nil, errors.New("Record not found")
 	}
 	resp.Balance = balance.Balance.String()
+	resp.Available = balance.Available.String()
 
 	switch inscription.TransferType {
 	case model.TransferTypeHash:
